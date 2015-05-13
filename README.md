@@ -1,10 +1,16 @@
-# Personality Insights Nodejs Starter Application
+# BeaS Labs Watson Personality Insights Demo 
 
-  The IBM Watson [Personality Insights][service_url] service uses linguistic analysis to extract cognitive and social characteristics from input text such as email, text messages, tweets, forum posts, and more. By deriving cognitive and social preferences, the service helps users to understand, connect to, and communicate with other people on a more personalized level.
+The demo is based on/ derived (a.k.a `forked`) from the Watson Developer Cloud [Personality Insights Nodejs Starter Application](https://github.com/watson-developer-cloud/personality-insights-nodejs).
+
+The demo adds the ability to discover personality traits, values and needs for a Twitter user name (via Twitter REST API).
+
+![](BeaSLabsWatsonPersonalityInsightsNodejsDemo.gif)
+
+The IBM Watson [Personality Insights][service_url] service uses linguistic analysis to extract cognitive and social characteristics from input text such as email, text messages, tweets, forum posts, and more. By deriving cognitive and social preferences, the service helps users to understand, connect to, and communicate with other people on a more personalized level.
 
 Give it a try! Click the button below to fork into IBM DevOps Services and deploy your own copy of this application on Bluemix.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/watson-developer-cloud/personality-insights-nodejs)
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/becketalservices/beas-labs-watson-personality-insights-nodejs)
 
 ## Getting Started
 
@@ -49,7 +55,7 @@ See the full [Getting Started][getting_started] documentation for more details, 
 ## Running locally
   The application uses [Node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/) so you will have to download and install them as part of the steps below.
 
-1. Copy the credentials from your `personality-insights-service` service in Bluemix to `app.js`, you can see the credentials using:
+1. Copy or rename `.env.dist` to `.env` and provide the credentials from your `personality-insights-service` service in Bluemix, you can see the credentials using:
 
     ```sh
     $ cf env <application-name>
@@ -79,7 +85,7 @@ See the full [Getting Started][getting_started] documentation for more details, 
 3. Go to the project folder in a terminal and run:
     `npm install`
 4. Start the application
-5.  `node app.js`
+5.  `npm start`
 6. Go to `http://localhost:3000`
 
 ## Troubleshooting

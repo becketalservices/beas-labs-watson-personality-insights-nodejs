@@ -16,10 +16,15 @@
 
 'use strict';
 
+// Loads environment variables from .env file
+require('dotenv').load();
+
 var express = require('express'),
   app = express(),
   bluemix = require('./config/bluemix'),
   watson = require('watson-developer-cloud'),
+  twitter = require('./lib/twitter'),
+  _ = require('underscore'),
   extend = require('util')._extend,
   fs = require('fs'),
   dummy_text = fs.readFileSync('mobydick.txt');
@@ -31,10 +36,17 @@ require('./config/express')(app);
 // if bluemix credentials exists, then override local
 var credentials = extend({
     version: 'v2',
-    url: '<url>',
-    username: '<username>',
-    password: '<password>'
+    url: process.env.BLUEMIX_PERSONALITY_INSIGHTS_URL,
+    username: process.env.BLUEMIX_PERSONALITY_INSIGHTS_USERNAME,
+    password: process.env.BLUEMIX_PERSONALITY_INSIGHTS_PASSWORD
 }, bluemix.getServiceCreds('personality_insights')); // VCAP_SERVICES
+
+var Twitter = new twitter({
+  consumer_key        : process.env.TWITTER_CONSUMER_KEY,
+  consumer_secret     : process.env.TWITTER_CONSUMER_SECRET,
+  access_token_key   : process.env.TWITTER_ACCESS_TOKEN,
+  access_token_secret : process.env.TWITTER_ACCESS_TOKEN_SECRET
+});
 
 // Create the service wrapper
 var personalityInsights = watson.personality_insights(credentials);
@@ -42,6 +54,33 @@ var personalityInsights = watson.personality_insights(credentials);
 // render index page
 app.get('/', function(req, res) {
   res.render('index', { content: dummy_text });
+});
+
+app.post('/twitter/', function(req, res) {
+  var screen_name = req.body.screen_name;
+  if(screen_name) {
+    Twitter.getUserTimeline(screen_name, function (tweets, errors) {
+      if(!errors) {
+        personalityInsights.profile({text: JSON.stringify(_.pluck(tweets, 'text'))}, function(err, profile) {
+          if (err) {
+            if (err.message){
+              err = { error: err.message };
+            }
+            return res.status(err.code || 500).json(err || 'Error processing the request');
+          }
+          else
+            return res.json(profile);
+        });
+      } else {
+        if (errors[0].message){
+          var err = { error: err[0].message };
+        }
+        return res.status(500).json(err || 'Error processing the request');
+      }
+    });
+  } else {
+    return res.status(500).json('Please enter a Twitter username...');
+  }
 });
 
 app.post('/', function(req, res) {

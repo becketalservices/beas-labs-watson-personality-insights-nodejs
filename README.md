@@ -49,13 +49,17 @@ applications:
   ```sh
   $ cf push
   ```
+  
+7. Add the credentials for the [Twitter App][Twitter App] as *user-defined* environment variables (see also `.env.dist`) to the running Bluexmix application:
+
+![](Bluemix_EnvVars_User_redacted.png)
 
 See the full [Getting Started][getting_started] documentation for more details, including code snippets and references.
 
 ## Running locally
   The application uses [Node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/) so you will have to download and install them as part of the steps below.
 
-1. Copy or rename `.env.dist` to `.env` and provide the credentials from your `personality-insights-service` service in Bluemix, you can see the credentials using:
+1. Copy or rename `.env.dist` to `.env` and provide the credentials for the Twitter API as well as from your `personality-insights-service` service in Bluemix, you can see the credentials using:
 
     ```sh
     $ cf env <application-name>
@@ -111,3 +115,4 @@ To troubleshoot your Bluemix app the main useful source of information are the l
 [cloud_foundry]: https://github.com/cloudfoundry/cli
 [getting_started]: http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/doc/getting_started/
 [sign_up]: https://apps.admin.ibmcloud.com/manage/trial/bluemix.html?cm_mmc=WatsonDeveloperCloud-_-LandingSiteGetStarted-_-x-_-CreateAnAccountOnBluemixCLI
+[Twitter App]: https://dev.twitter.com/apps

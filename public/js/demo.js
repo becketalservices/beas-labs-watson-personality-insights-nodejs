@@ -1,8 +1,6 @@
 /**
  * Copyright 2014 IBM Corp. All Rights Reserved.
  *
- * Copyright 2015 Beck et al. Services GmbH All Rights Reserved.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +24,7 @@ $(document).ready(function() {
 
   // Jquery variables
   var $content = $('.content'),
-    $screen_name = $('.screen_name'),
+    $twitter = $('.twitter'),
     $loading = $('.loading'),
     $error = $('.error'),
     $errorMsg = $('.errorMsg'),
@@ -34,19 +32,12 @@ $(document).ready(function() {
     $results = $('.results');
 
   /**
-   * Clear the "input"
-   */
-  $('.clear-screen_name-btn').click(function(){
-    $('.clear-screen_name-btn').blur();
-    $screen_name.val('');
-  });
-
-  /**
-   * Clear the "textArea"
+   * Clear the "textArea" and "input"
    */
   $('.clear-btn').click(function(){
     $('.clear-btn').blur();
     $content.val('');
+    $twitter.val('');
     updateWordsCount();
   });
 
@@ -64,51 +55,6 @@ $(document).ready(function() {
 
   /**
    * 1. Create the request
-   * 2. Call the Twitter API
-   * 3. Call the PI API
-   * 4. Call the methods to display the results
-   */
-  $('.analysis-screen_name-btn').click(function(){
-    console.log($screen_name.val());
-    $('.analysis-screen_name-btn').blur();
-    $loading.show();
-    $error.hide();
-    $traits.hide();
-    $results.hide();
-
-    $.ajax({
-      type: 'POST',
-      data: {
-        screen_name: $screen_name.val()
-      },
-      url: '/twitter/',
-      dataType: 'json',
-      success: function(response) {
-        $loading.hide();
-
-        if (response.error) {
-          showError(response.error);
-        } else {
-          $results.show();
-          showTraits(response);
-          showTextSummary(response);
-          showVizualization(response);
-        }
-
-      },
-      error: function(xhr) {
-        $loading.hide();
-        var error;
-        try {
-          error = JSON.parse(xhr.responseText);
-        } catch(e) {}
-        showError(error.error || error);
-      }
-    });
-  });
-
-  /**
-   * 1. Create the request
    * 2. Call the API
    * 3. Call the methods to display the results
    */
@@ -119,12 +65,15 @@ $(document).ready(function() {
     $traits.hide();
     $results.hide();
 
+    // find active tab
+    var activeTab = $('.nav-tabs .active').attr('role');
+    var data = (activeTab === 'text') ? {text: $content.val()} : {twitter: $twitter.val()};
+    var url = (activeTab === 'text') ? '/' : '/twitter/';
+
     $.ajax({
       type: 'POST',
-      data: {
-        text: $content.val()
-      },
-      url: '/',
+      data: data,
+      url: url,
       dataType: 'json',
       success: function(response) {
         $loading.hide();

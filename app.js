@@ -44,7 +44,7 @@ var credentials = extend({
 var Twitter = new twitter({
   consumer_key        : process.env.TWITTER_CONSUMER_KEY,
   consumer_secret     : process.env.TWITTER_CONSUMER_SECRET,
-  access_token_key   : process.env.TWITTER_ACCESS_TOKEN,
+  access_token_key    : process.env.TWITTER_ACCESS_TOKEN,
   access_token_secret : process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
@@ -57,37 +57,33 @@ app.get('/', function(req, res) {
 });
 
 app.post('/twitter/', function(req, res) {
-  var screen_name = req.body.screen_name;
-  if(screen_name) {
-    Twitter.getUserTimeline(screen_name, function (tweets, errors) {
-      if(!errors) {
-        personalityInsights.profile({text: JSON.stringify(_.pluck(tweets, 'text'))}, function(err, profile) {
-          if (err) {
-            if (err.message){
-              err = { error: err.message };
-            }
-            return res.status(err.code || 500).json(err || 'Error processing the request');
+  var query = req.body.twitter;
+  Twitter.query(query, function (tweets, errors) {
+    if(!errors) {
+      personalityInsights.profile({text: tweets}, function(err, profile) {
+        if (err) {
+          if (err.message) {
+            err = {error: err.message};
           }
-          else
-            return res.json(profile);
-        });
-      } else {
-        if (errors[0].message){
-          var err = { error: err[0].message };
+          return res.status(err.code || 500).json(err || 'Error processing the request');
         }
-        return res.status(500).json(err || 'Error processing the request');
+        else
+          return res.json(profile);
+      });
+    } else {
+      if (errors[0].message){
+        var err = { error: errors[0].message };
       }
-    });
-  } else {
-    return res.status(500).json('Please enter a Twitter username...');
-  }
+      return res.status(500).json(err || 'Error processing the request');
+    }
+  });
 });
 
 app.post('/', function(req, res) {
   personalityInsights.profile(req.body, function(err, profile) {
     if (err) {
-      if (err.message){
-        err = { error: err.message };
+      if (err.message) {
+        err = {error: err.message};
       }
       return res.status(err.code || 500).json(err || 'Error processing the request');
     }
